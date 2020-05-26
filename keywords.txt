@@ -92,6 +92,7 @@ ezMenu	KEYWORD3
 addItem	KEYWORD2
 deleteItem	KEYWORD2
 setCaption	KEYWORD2
+setSortFunction	KEYWORD2
 getItemNum	KEYWORD2
 buttons	KEYWORD2
 upOnFirst	KEYWORD2

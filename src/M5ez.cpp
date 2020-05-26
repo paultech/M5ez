@@ -2716,6 +2716,7 @@ ezMenu::ezMenu(String hdr /* = "" */) {
 	_img_caption_color = TFT_RED;
 	_img_caption_hmargin = 10;
 	_img_caption_vmargin = 10;
+	_sortFunction = NULL;
 }
 
 void ezMenu::txtBig() { _font = ez.theme->menu_big_font; }
@@ -2738,6 +2739,7 @@ bool ezMenu::addItem(const char *image, String nameAndCaption , void (*simpleFun
 	new_item.drawFunction = drawFunction;
 	if (_selected == -1) _selected = _items.size();
 	_items.push_back(new_item);
+	_sortItems();
 	M5ez::_redraw = true;
 	return true;
 }
@@ -2753,6 +2755,7 @@ bool ezMenu::addItem(fs::FS &fs, String path, String nameAndCaption, void (*simp
 	new_item.drawFunction = drawFunction;
 	if (_selected == -1) _selected = _items.size();
 	_items.push_back(new_item);
+	_sortItems();
 	M5ez::_redraw = true;
 	return true;
 }
@@ -2788,6 +2791,11 @@ int16_t ezMenu::getItemNum(String name) {
 		if (itemName == name) return n + 1;
 	}
 	return 0;
+}
+
+void ezMenu::setSortFunction(bool (*sortFunction)(const char* s1, const char* s2)) {
+	_sortFunction = sortFunction;
+	_sortItems();	// In case the menu is already populated
 }
 
 void ezMenu::buttons(String bttns) {
@@ -3124,6 +3132,19 @@ void ezMenu::_Arrows() {
 		fill_color = ez.screen.background();
 	}
 	m5.lcd.fillTriangle(l, top + height - 25, l + 10, top + height - 25, l + 5, top + height - 10, fill_color);		
+}
+
+bool ezMenu::_sortWrapper(MenuItem_t& item1, MenuItem_t& item2) {
+	// Be sure to set _sortFunction before calling _sortWrapper(), as _sortItems ensures.
+	return _sortFunction(item1.nameAndCaption.c_str(), item2.nameAndCaption.c_str());
+}
+
+void ezMenu::_sortItems() {
+	if(_sortFunction && _items.size() > 1) {
+		using namespace std::placeholders;	// For _1, _2
+		sort(_items.begin(), _items.end(), std::bind(&ezMenu::_sortWrapper, this, _1, _2));
+		M5ez::_redraw = true;
+	}
 }
 
 
