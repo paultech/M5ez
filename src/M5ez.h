@@ -26,7 +26,7 @@
 #define M5EZ_BACKLIGHT
 
 // Compile in ezTime and create a settings menu for clock display
-#define M5EZ_CLOCK
+// #define M5EZ_CLOCK
 
 // FACES settings menu
 #define M5EZ_FACES
